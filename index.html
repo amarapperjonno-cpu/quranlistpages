@@ -1,0 +1,1170 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Madani Hifz — Quranic Video Library</title>
+  <style>
+    :root{
+      --green:#0a8f3d;
+      --green-dark:#077533;
+      --ash:#f2f2f2;
+      --ash-border:#dddddd;
+      --text:#111111;
+      --muted:#555555;
+      --bg:#ffffff;
+      --card:#ffffff;
+      --chip:#f7f7f7;
+      --star:#f7b500;
+      --divider:#eaeaea;
+      --shadow:0 2px 10px rgba(0,0,0,0.08);
+    }
+    [data-theme="dark"]{
+      --green:#0f9d58;
+      --green-dark:#0b7a44;
+      --ash:#1f1f1f;
+      --ash-border:#333;
+      --text:#e8e8e8;
+      --muted:#aaa;
+      --bg:#121212;
+      --card:#1a1a1a;
+      --chip:#222;
+      --star:#ffd257;
+      --divider:#2a2a2a;
+      --shadow:0 2px 12px rgba(0,0,0,0.3);
+    }
+    html,body{
+  margin:0;
+  padding:0;
+  height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,"Noto Sans Bengali","SolaimanLipi","AdorshoLipi",sans-serif;
+  
+  /* এই লাইনগুলো যোগ করুন */
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none;    /* IE 10+ and Edge */
+  user-select: none;         /* Standard syntax */
+}
+    .top{position:fixed;top:0;left:0;right:0;z-index:1000}
+    .green-bar{
+      background:var(--green);color:#fff;display:flex;align-items:center;gap:.75rem;
+      padding:.75rem .75rem;box-shadow:var(--shadow)
+    }
+    .green-bar .hamburger, .green-bar .back-btn{font-size:1.4rem;cursor:pointer;line-height:1}
+    .green-bar .title{font-weight:700;letter-spacing:.2px;flex:1;text-align:center}
+    .green-bar .theme-toggle{cursor:pointer;font-size:1.2rem;line-height:1.2}
+    .ash-bar{
+      background:var(--ash);border-bottom:1px solid var(--ash-border);
+      box-shadow:var(--shadow)
+    }
+    .tabs{display:flex}
+    .tab{
+      flex:1;padding:.6rem .5rem;border-right:1px solid var(--ash-border);
+      text-align:center;background:transparent;color:var(--text);cursor:pointer;
+      font-weight:600;white-space:nowrap
+    }
+    .tab:last-child{border-right:none}
+    .tab.active{background:var(--chip)}
+    .selected-text{
+      background:var(--ash);border-top:1px solid var(--ash-border);
+      border-bottom:1px solid var(--ash-border);padding:.6rem .9rem;
+      font-weight:700;text-align:center
+    }
+    @media (max-width:420px){
+      .tab{font-size:.9rem}
+    }
+    .spacer{height:126px}
+    .drawer{
+      position:fixed;top:48px;left:-260px;bottom:0;width:260px;background:var(--card);
+      box-shadow:var(--shadow);transition:left .25s ease;z-index:1100;border-right:1px solid var(--divider)
+    }
+    .drawer.open{left:0}
+    .drawer-header{padding:1rem .9rem;font-weight:700;border-bottom:1px solid var(--divider)}
+    .drawer-item{padding:.75rem .9rem;cursor:pointer;display:flex;align-items:center;gap:.6rem}
+    .drawer-item:hover{background:var(--chip)}
+    .backdrop{
+      position:fixed;inset:0;background:rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity .2s;z-index:1050
+    }
+    .backdrop.show{opacity:1;pointer-events:auto}
+    .container{padding:1rem;max-width:920px;margin:0 auto}
+    .list{display:flex;flex-direction:column;gap:.6rem}
+    .card-btn{
+      display:flex;justify-content:space-between;align-items:stretch;gap:.75rem;
+      background:var(--card);border:1px solid var(--divider);border-radius:.6rem;padding:.8rem;
+      box-shadow:var(--shadow);cursor:pointer
+    }
+    .card-left{flex:1;min-width:0}
+    .line-1{font-weight:800}
+    .line-2{font-weight:700;opacity:.95}
+    .line-3{font-size:.9rem;color:var(--muted);margin-top:.15rem}
+    .card-right{display:flex;flex-direction:column;justify-content:center;align-items:flex-end;gap:.2rem;min-width:120px}
+    .meta{font-size:.8rem;color:var(--muted)}
+    .overlay{
+      position:fixed;top:0;right:-100%;bottom:0;width:100%;max-width:900px;background:var(--bg);
+      box-shadow:var(--shadow);transition:right .28s ease;z-index:1200;display:flex;flex-direction:column
+    }
+    .overlay.open{right:0}
+    .overlay-header{
+      padding:.9rem 1rem;border-bottom:1px solid var(--divider);font-weight:800;text-align:center;
+      position:sticky;top:0;background:var(--bg);z-index:2
+    }
+    .info-box{
+      position:sticky;top:48px;background:var(--chip);border-bottom:1px solid var(--divider);
+      padding:.7rem 1rem;z-index:1
+    }
+    .info-title{font-weight:800;margin-bottom:.25rem}
+    .info-sub{font-size:.9rem;color:var(--muted)}
+    .overlay-body{padding:1rem;overflow:auto;flex:1}
+    .ayat-btn{
+      display:flex;justify-content:space-between;align-items:center;border:1px solid var(--divider);
+      border-radius:.6rem;background:var(--card);padding:.75rem .8rem;box-shadow:var(--shadow);gap:.75rem
+    }
+    .ayat-left{flex:1;min-width:0}
+    .ayat-name{font-weight:800}
+    .ayat-bn{opacity:.95}
+    .star{font-size:1.2rem;cursor:pointer;color:var(--muted);user-select:none}
+    .star.active{color:var(--star)}
+    .actions{display:flex;gap:.5rem;align-items:center}
+    .icon-btn{
+      font-size:1.05rem;cursor:pointer;border:1px solid var(--divider);border-radius:.5rem;background:var(--card);
+      padding:.35rem .5rem
+    }
+    .section-actions{display:flex;justify-content:flex-end;margin-bottom:.5rem}
+    .clear-btn{border:1px solid var(--divider);padding:.4rem .6rem;border-radius:.4rem;background:var(--card);cursor:pointer}
+    .empty{color:var(--muted);text-align:center;padding:1.2rem}
+    a.link{color:inherit;text-decoration:none}
+    .pill{display:inline-block;background:var(--chip);border:1px solid var(--divider);padding:.1rem .4rem;border-radius:.4rem;margin-left:.25rem;font-size:.78rem}
+
+    /* === VIDEO PLAYER STYLES START === */
+    #videoPlayerOverlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: var(--bg);
+      z-index: 1300;
+      transform: translateX(100%);
+      transition: transform 0.3s ease-in-out;
+      display: flex;
+      flex-direction: column;
+    }
+    #videoPlayerOverlay.open {
+      transform: translateX(0);
+    }
+    /* নতুন কোড */
+.video-player-wrap {
+    flex: 1; /* এটি নিশ্চিত করে যেন র‍্যাপারটি পুরো জায়গা নেয় */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden; /* কোনো কিছু যেন বাইরে না যায় */
+}
+    .video-player-wrap .topbar {
+      width:100%; max-width:480px; display:flex; align-items:center;
+      justify-content:space-between; background:var(--green); color:#fff;
+      padding:12px 16px; box-sizing:border-box; flex-shrink: 0;
+    }
+    .video-player-wrap .topbar .title { flex:1; text-align:center; font-size:18px; font-weight:700; }
+    .video-player-wrap .icon-btn {
+      background:transparent; border:none; color:#fff;
+      font-size:24px; cursor:pointer; line-height:1;
+    }
+    .video-player-wrap .player-box {
+      width:100%;max-width:480px; aspect-ratio:9/16;
+      border-radius:12px; overflow:hidden; background:#000;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .video-player-wrap iframe{width:100%;height:100%;border:0;display:block;}
+    .video-player-wrap .controls{display:flex;gap:8px;}
+    .video-player-wrap .controls button{
+      padding:10px 14px; border-radius:10px; border:0;
+      cursor:pointer; background:var(--chip); color:var(--text); font-weight:700;
+    }
+    .video-player-wrap .side-drawer {
+      position:fixed; top:0;right:-300px; width:300px;height:100%;
+      background:var(--card); border-left: 1px solid var(--divider);
+      box-sizing:border-box; transition:right .3s ease-in-out;
+      z-index:1400; display:flex; flex-direction:column;
+    }
+    .video-player-wrap .side-drawer.open { right:0; }
+    .video-player-wrap .side-drawer-header {
+      padding: 16px; text-align:center; font-weight: 700;
+      border-bottom: 1px solid var(--divider);
+    }
+    .video-player-wrap .side-drawer-body {
+      padding: 12px; flex: 1; overflow-y: auto;
+    }
+    .video-player-wrap .check-row {
+      display:flex;align-items:center; gap:10px;padding:8px 4px;
+      border-bottom: 1px solid var(--divider);
+    }
+    .video-player-wrap .check-row input { cursor:pointer; }
+    .video-player-wrap .side-drawer .play-btn {
+      margin: 12px; padding:12px; background:var(--green);
+      color:#fff; border:0; border-radius:8px;
+      font-weight:700; cursor:pointer;
+    }
+/* === Video Player Drawer Enhancements START === */
+    .video-drawer-backdrop {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.25);
+      z-index: 1350; /* ড্রয়ারের (1400) চেয়ে কম, প্লেয়ারের চেয়ে বেশি */
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s ease-in-out;
+    }
+    .video-drawer-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .video-player-wrap .side-drawer-header {
+      position: relative; /* Close বাটনকে পজিশন করার জন্য */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .video-player-wrap .close-btn {
+      position: absolute;
+      top: 50%;
+      right: 16px;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 28px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0 5px;
+    }
+    .video-player-wrap .close-btn:hover {
+      color: var(--text);
+    }
+    /* === Video Player Drawer Enhancements END === */
+    /* === VIDEO PLAYER STYLES END === */
+/* পুরোনো বাটনগুলো লুকিয়ে ফেলার জন্য */
+.video-player-wrap .controls {
+    display: none;
+}
+
+/* নতুন বাটনগুলোকে ভিডিওর উপরে বসানোর জন্য মূল কন্টেইনার */
+/* নতুন কোড */
+.player-wrapper {
+    position: relative;
+    width: 100%;
+    flex-grow: 1; /* এই লাইনটিই মূল কাজ করবে */
+    background: #000;
+    overflow: hidden;
+}
+/* নতুন বাটনগুলোর সাধারণ স্টাইল */
+.video-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10; /* ইউটিউব প্লেয়ারের উপরে রাখার জন্য */
+    height: 120px; /* লম্বায় বড় */
+    width: 50px; /* চওড়ায় কম */
+    background-color: rgba(0, 0, 0, 0.15); /* হালকা স্বচ্ছ ব্যাকগ্রাউন্ড */
+    color: rgba(255, 255, 255, 0.6); /* হালকা স্বচ্ছ তীর */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.video-nav-btn:hover {
+    background-color: rgba(0, 0, 0, 0.4); /* হোভার করলে একটু গাঢ় হবে */
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* বাম ও ডান বাটনের আলাদা পজিশন */
+.video-nav-btn.left {
+    left: 0;
+    border-radius: 0 10px 10px 0;
+}
+
+.video-nav-btn.right {
+    right: 0;
+    border-radius: 10px 0 0 10px;
+}
+/* === LOADER & ERROR STYLES START === */
+    #loader-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 60vh;
+      flex-direction: column;
+    }
+    .loader {
+      border: 5px solid var(--ash);
+      border-top: 5px solid var(--green);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    #error-message {
+      text-align: center;
+      color: var(--muted);
+    }
+    #reloadBtn {
+      background: var(--card);
+      border: 1px solid var(--divider);
+      color: var(--text);
+      padding: .5rem 1rem;
+      border-radius: .5rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: .5rem;
+    }
+    #reloadBtn:hover {
+      background: var(--chip);
+    }
+    /* === LOADER & ERROR STYLES END === *///
+  </style>
+</head>
+<body>
+  <div class="top">
+    <div class="green-bar">
+      <div class="hamburger" id="hamburger" title="Menu">☰</div>
+      <div class="title">Madani Hifz</div>
+      <div class="theme-toggle" id="themeToggle" title="Light/Dark">🌙</div>
+    </div>
+    <div class="ash-bar">
+      <div class="tabs">
+        <div class="tab active" data-tab="surah">Surah List</div>
+        <div class="tab" data-tab="para">Para / Juz List</div>
+        <div class="tab" data-tab="bookmarks">Bookmarks</div>
+        <div class="tab" data-tab="recent">Recent</div>
+      </div>
+      <div class="selected-text" id="selectedText">List of Surahs</div>
+    </div>
+  </div>
+  <div class="spacer"></div>  <div class="drawer" id="drawer">
+    <div class="drawer-header" style="display: flex; justify-content: space-between; align-items: center;">
+      <span>Menu</span>
+      <span class="theme-toggle" id="drawerTheme" style="cursor:pointer; font-size: 1.2rem;" title="Light/Dark">🌙</span>
+    </div>
+    
+    <div class="drawer-item" data-info="how-to-use">
+      <span>💡</span><span>How to use this app</span>
+    </div>
+    <div class="drawer-item" data-info="how-to-benefit">
+      <span>🏆</span><span>How to be benefit by this app</span>
+    </div>
+    <div class="drawer-item" data-info="about-us">
+      <span>ℹ️</span><span>About Us</span>
+    </div>
+    <div class="drawer-item" data-info="contact-wa">
+      <span>📱</span><span>Contact us on WhatsApp</span>
+    </div>
+    <div class="drawer-item" data-info="like-fb">
+      <span>👍</span><span>Like us on Facebook</span>
+    </div>
+    <div class="drawer-item" data-info="sub-yt">
+      <span>▶️</span><span>Subscribe us on YouTube</span>
+    </div>
+  </div>
+
+
+  <div class="backdrop" id="backdrop"></div>
+
+  <main class="container">
+    <div id="loader-container">
+      <div class="loader"></div>
+      <div id="error-message" style="display:none;">
+        <p>অনুগ্রহ করে আপনার ইন্টারনেট কানেকশন চেক করুন।</p>
+        <button id="reloadBtn">Reload</button>
+      </div>
+    </div>
+
+    <div id="view-surah" class="list" style="display:none;"></div>
+    <div id="view-para" class="list" style="display:none"></div>
+    <div id="view-bookmarks" style="display:none">
+      <div class="section-actions"><button class="clear-btn" id="clearBookmarks">Clear All</button></div>
+      <div class="list" id="bookmarkList"></div>
+      <div class="empty" id="bookmarkEmpty" style="display:none">No bookmarks yet.</div>
+    </div>
+    <div id="view-recent" style="display:none">
+      <div class="section-actions"><button class="clear-btn" id="clearRecent">Clear Recent</button></div>
+      <div class="list" id="recentList"></div>
+      <div class="empty" id="recentEmpty" style="display:none">No recent items.</div>
+    </div>
+  </main>
+
+  <section class="overlay" id="overlay">
+      <section class="overlay" id="infoOverlay">
+    <div class="green-bar">
+      <div class="back-btn" id="infoOverlayBack" title="Back">←</div>
+      <div class="title" id="infoOverlayTitle">Info</div>
+      <div class="theme-toggle" id="infoThemeToggle" title="Light/Dark">🌙</div>
+    </div>
+    <div class="overlay-body" style="padding: 1.5rem; line-height: 1.6;">
+      <div id="infoContent">
+         এখানে টেক্সট বসানো হবে...
+      </div>
+    </div>
+  </section>
+
+    <div class="green-bar">
+      <div class="back-btn" id="overlayBack" title="Back">←</div>
+      <div class="title">Madani Hifz</div>
+      <div class="theme-toggle" id="overlayThemeToggle" title="Light/Dark">🌙</div>
+    </div>
+    <div class="overlay-header">List of Ayats</div>
+    <div class="info-box">
+      <div class="info-title" id="infoTitle"></div>
+      <div class="info-sub" id="infoSub"></div>
+    </div>
+    <div class="overlay-body">
+      <div class="list" id="ayatList"></div>
+    </div>
+  </section>
+
+  <section id="videoPlayerOverlay">
+    <div class="video-player-wrap">
+      <div class="topbar">
+        <button id="playerBackBtn" class="icon-btn">←</button>
+        <div class="title" id="playerTitle">Madani Hifz Video Player</div>
+        <button id="drawerToggle" class="icon-btn">☰</button>
+      </div>
+      <div class="player-wrapper">
+        <div class="player-box" id="playerContainer" aria-label="portrait player"></div>
+        
+        <div id="videoPrevBtn" class="video-nav-btn left">
+          <span>&#10094;</span>
+        </div>
+
+        <div id="videoNextBtn" class="video-nav-btn right">
+          <span>&#10095;</span>
+        </div>
+      </div>
+<div id="videoDrawerBackdrop" class="video-drawer-backdrop"></div>
+
+      <div id="sideDrawer" class="side-drawer">
+        <div class="side-drawer-header">
+          <span>Repeat Ayats</span>
+          <button id="closeSideDrawerBtn" class="close-btn">&times;</button>
+        </div>
+        <div class="side-drawer-body" id="ayatSelectionList"></div>
+        <button id="playSelectedBtn" class="play-btn">Play Selected</button>
+      </div>
+    </div>
+  </section>
+  <script>
+    // CONFIG
+    const API_URL = "https://script.google.com/macros/s/AKfycbxGhbdBnPeqO8ALv1m4UipI-_ucCESBY3ZRy6NwB2a8JaQXSYpOSLunGnBXujED4-culg/exec";
+
+    // STATE
+    let RAW = [];
+    let bySurahID = new Map();
+    let ayatsBySurahID = new Map();
+    let ayatsByPara = new Map();
+    let paraRanges = new Map();
+    let currentTab = "surah";
+    let currentTheme = localStorage.getItem("mh_theme") || "light";
+    let bookmarks = loadLS("mh_bookmarks", []);
+    let recent = loadLS("mh_recent", []);
+
+    // ELEMENTS
+    const tabs = document.querySelectorAll(".tab");
+    const selectedText = document.getElementById("selectedText");
+    const viewSurah = document.getElementById("view-surah");
+    const viewPara = document.getElementById("view-para");
+    const viewBookmarks = document.getElementById("view-bookmarks");
+    const viewRecent = document.getElementById("view-recent");
+    const bookmarkList = document.getElementById("bookmarkList");
+    const bookmarkEmpty = document.getElementById("bookmarkEmpty");
+    const recentList = document.getElementById("recentList");
+    const recentEmpty = document.getElementById("recentEmpty");
+    const overlay = document.getElementById("overlay");
+    const infoTitle = document.getElementById("infoTitle");
+    const infoSub = document.getElementById("infoSub");
+    const ayatList = document.getElementById("ayatList");
+    const clearBookmarksBtn = document.getElementById("clearBookmarks");
+    const clearRecentBtn = document.getElementById("clearRecent");
+    const drawer = document.getElementById("drawer");
+    const backdrop = document.getElementById("backdrop");
+    const hamburger = document.getElementById("hamburger");
+    const themeToggle = document.getElementById("themeToggle");
+    const drawerTheme = document.getElementById("drawerTheme");
+    document.getElementById("overlayBack").addEventListener("click", closeOverlay);
+    document.getElementById("overlayThemeToggle").addEventListener("click", toggleTheme);
+
+    const loaderContainer = document.getElementById("loader-container");
+    const loaderSpinner = loaderContainer.querySelector(".loader");
+    const errorMessage = document.getElementById("error-message");
+    const reloadBtn = document.getElementById("reloadBtn");
+
+    // THEME INIT
+    setTheme(currentTheme);
+
+    // EVENTS
+    tabs.forEach(t => t.addEventListener("click", () => switchTab(t.dataset.tab)));
+    clearBookmarksBtn.addEventListener("click", () => { bookmarks = []; saveLS("mh_bookmarks", bookmarks); renderBookmarks(); });
+    clearRecentBtn.addEventListener("click", () => { recent = []; saveLS("mh_recent", recent); renderRecent(); });
+    hamburger.addEventListener("click", openDrawer);
+    backdrop.addEventListener("click", closeDrawer);
+    themeToggle.addEventListener("click", toggleTheme);
+    drawerTheme.addEventListener("click", toggleTheme);
+
+    // FETCH & INIT
+    init();
+
+    async function init(){
+      // ডেটা লোড করার আগে লোডার দেখান
+      loaderContainer.style.display = 'flex';
+      loaderSpinner.style.display = 'block';
+      errorMessage.style.display = 'none';
+      viewSurah.style.display = 'none';
+
+      try {
+        const r = await fetch(API_URL);
+        if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
+        RAW = await r.json();
+        normalizeData();
+        renderSurahList();
+        renderParaList();
+        renderBookmarks();
+        renderRecent();
+        initPlayer();
+        
+        // ডেটা লোড সফল হলে লোডার লুকিয়ে কন্টেন্ট দেখান
+        loaderContainer.style.display = 'none';
+        viewSurah.style.display = ''; // অথবা 'flex', কারণ .list-এর display flex
+      } catch (error) {
+        console.error("Failed to load data:", error);
+        // ডেটা লোড ব্যর্থ হলে স্পিনার লুকিয়ে এরর মেসেজ দেখান
+        loaderSpinner.style.display = 'none';
+        errorMessage.style.display = 'block';
+      }
+    }
+
+    function normalizeData() {
+        for (const row of RAW) {
+            const surahNo = toNum(row["surah no"]);
+            const surahID = row["SurahID"];
+            const nameEn = row["SurahName"] || "";
+            const nameBn = row["bengali name"] || "";
+            const revelation = (row["revelation"] || "").trim();
+            const para = toNum(row["para"]);
+            const totalAyat = toNum(row["total ayat"]);
+            const ayatUp = toNum(row["ayat up"]);
+            const vidUp = toNum(row["vid up"]);
+
+            if (surahID) {
+                if (!ayatsBySurahID.has(surahID)) ayatsBySurahID.set(surahID, []);
+                ayatsBySurahID.get(surahID).push(row);
+
+                if (!bySurahID.has(surahID)) {
+                    bySurahID.set(surahID, {
+                        surahNo, nameEn, nameBn, revelation,
+                        totalAyat: Number.isFinite(totalAyat) ? totalAyat : undefined,
+                        ayatUp: Number.isFinite(ayatUp) ? ayatUp : undefined,
+                        vidUp: Number.isFinite(vidUp) ? vidUp : undefined,
+                        paras: new Set()
+                    });
+                } else {
+                    const ref = bySurahID.get(surahID);
+                    if (!ref.nameEn && nameEn) ref.nameEn = nameEn;
+                    if (!ref.nameBn && nameBn) ref.nameBn = nameBn;
+                    if (!ref.revelation && revelation) ref. revelation = revelation;
+                    if (!Number.isFinite(ref.totalAyat) && Number.isFinite(totalAyat)) ref.totalAyat = totalAyat;
+                    if (!Number.isFinite(ref.ayatUp) && Number.isFinite(ayatUp)) ref.ayatUp = ayatUp;
+                    if (!Number.isFinite(ref.vidUp) && Number.isFinite(vidUp)) ref.vidUp = vidUp;
+                }
+                if (Number.isFinite(para)) bySurahID.get(surahID).paras.add(para);
+            }
+
+            if (Number.isFinite(para)) {
+                if (!ayatsByPara.has(para)) ayatsByPara.set(para, []);
+                ayatsByPara.get(para).push(row);
+            }
+        }
+
+        for (const [, list] of ayatsBySurahID) {
+            list.sort((a, b) => {
+                const aS = toNum(a["surah no"]); const bS = toNum(b["surah no"]);
+                const aA = toNum(a["ayat no "]);  const bA = toNum(b["ayat no "]);
+                if (aS !== bS) return aS - bS;
+                return aA - bA;
+            });
+        }
+
+        for (const [p, list] of ayatsByPara) {
+            list.sort((a, b) => {
+                const aS = toNum(a["surah no"]); const bS = toNum(b["surah no"]);
+                const aA = toNum(a["ayat no "]);  const bA = toNum(b["ayat no "]);
+                if (aS !== bS) return aS - bS;
+                return aA - bA;
+            });
+            const first = list[0], last = list[list.length - 1];
+            if (first && last) {
+                paraRanges.set(p, {
+                    start: { surahNo: pad2(toNum(first["surah no"])), ayatNo: toNum(first["ayat no "]), surahName: first["SurahName"] || "" },
+                    end: { surahNo: pad2(toNum(last["surah no"])), ayatNo: toNum(last["ayat no "]), surahName: last["SurahName"] || "" }
+                });
+            }
+        }
+    }
+    
+    function renderSurahList() {
+        viewSurah.innerHTML = "";
+        const entries = Array.from(bySurahID.entries()).sort((a, b) => (a[1].surahNo ?? 999) - (b[1].surahNo ?? 999));
+        for (const [sid, s] of entries) {
+            const btn = document.createElement("div"); btn.className = "card-btn";
+            const left = document.createElement("div"); left.className = "card-left";
+            const l1 = document.createElement("div"); l1.className = "line-1"; l1.textContent = `${pad2(s.surahNo)}. ${s.nameEn || "—"}`;
+            const l2 = document.createElement("div"); l2.className = "line-2"; l2.textContent = `${toBnDigits(pad2(s.surahNo))}. ${s.nameBn || "—"}`;
+            const l3 = document.createElement("div"); l3.className = "line-3"; const paras = Array.from(s.paras).sort((a, b) => a - b); l3.textContent = `Para/Juz no: ${paras.join(", ") || "—"}`;
+            left.append(l1, l2, l3);
+            const right = document.createElement("div"); right.className = "card-right";
+            const m1 = document.createElement("div"); m1.className = "meta"; m1.textContent = `Total Ayats: ${s.totalAyat ?? "—"}`;
+            const m2 = document.createElement("div"); m2.className = "meta"; m2.textContent = `Uploaded Ayats: ${s.ayatUp ?? "—"}`;
+            const m3 = document.createElement("div"); m3.className = "meta"; m3.textContent = `Uploaded Videos: ${s.vidUp ?? "—"}`;
+            right.append(m1, m2, m3);
+            btn.append(left, right);
+            btn.addEventListener("click", () => openOverlayForSurah(sid));
+            viewSurah.append(btn);
+        }
+    }
+
+    function renderParaList() {
+        viewPara.innerHTML = "";
+        const paras = Array.from(ayatsByPara.keys()).sort((a, b) => a - b);
+        for (const p of paras) {
+            const btn = document.createElement("div"); btn.className = "card-btn";
+            const left = document.createElement("div"); left.className = "card-left";
+            const l1 = document.createElement("div"); l1.className = "line-1"; l1.textContent = `Para / Juz: ${p}`;
+            const l2 = document.createElement("div"); l2.className = "line-2"; l2.textContent = `পারা: ${toBnDigits(p)}`;
+               const l3 = document.createElement("div"); l3.className = "line-3";
+            const r = paraRanges.get(p);
+            if (r) { l3.textContent = `${r.start.surahName} ${r.start.surahNo}:${r.start.ayatNo} - ${r.end.surahName} ${r.end.surahNo}:${r.end.ayatNo}`; } else { l3.textContent = "—"; }
+            left.append(l1, l2, l3);
+            btn.append(left, document.createElement("div"));
+            btn.addEventListener("click", () => openOverlayForPara(p));
+            viewPara.append(btn);
+        }
+    }
+
+    function renderBookmarks() {
+        bookmarkList.innerHTML = "";
+        bookmarkEmpty.style.display = bookmarks.length ? "none" : "";
+        for (const item of bookmarks) {
+            const row = document.createElement("div"); row.className = "ayat-btn";
+            const left = document.createElement("div"); left.className = "ayat-left";
+            const n1 = document.createElement("div"); n1.className = "ayat-name"; n1.textContent = item.AyatName || "—";
+            const n2 = document.createElement("div"); n2.className = "ayat-bn"; n2.textContent = item.BAyatName || "";
+            left.append(n1, n2);
+            const actions = document.createElement("div"); actions.className = "actions";
+            const openBtn = document.createElement("button"); openBtn.className = "icon-btn"; openBtn.textContent = "▶"; openBtn.title = "Open Video";
+            openBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const surahAyats = ayatsBySurahID.get(item.SurahID) || [];
+                const itemIndex = surahAyats.findIndex(a => a.AyatID === item.AyatID);
+                if (itemIndex > -1) {
+                    openVideoPlayer(surahAyats, itemIndex);
+                }
+                addRecent(item);
+            });
+            const del = document.createElement("button"); del.className = "icon-btn"; del.textContent = "🗑️"; del.title = "Remove";
+            del.addEventListener("click", (e) => { e.stopPropagation(); removeBookmark(item.AyatID); });
+            actions.append(openBtn, del);
+            row.append(left, actions);
+            row.addEventListener("click", () => { if (item.SurahID) openOverlayForSurah(item.SurahID, item.AyatID); });
+            bookmarkList.append(row);
+        }
+    }
+
+    function renderRecent() {
+        recentList.innerHTML = "";
+        recentEmpty.style.display = recent.length ? "none" : "";
+        for (const item of recent) {
+            const row = document.createElement("div"); row.className = "ayat-btn";
+            const left = document.createElement("div"); left.className = "ayat-left";
+            const n1 = document.createElement("div"); n1.className = "ayat-name"; n1.textContent = item.AyatName || "—";
+            const n2 = document.createElement("div"); n2.className = "ayat-bn"; n2.textContent = item.BAyatName || "";
+            left.append(n1, n2);
+            const actions = document.createElement("div"); actions.className = "actions";
+            const openBtn = document.createElement("button"); openBtn.className = "icon-btn"; openBtn.textContent = "▶"; openBtn.title = "Open Video";
+            openBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const surahAyats = ayatsBySurahID.get(item.SurahID) || [];
+                const itemIndex = surahAyats.findIndex(a => a.AyatID === item.AyatID);
+                if (itemIndex > -1) {
+                    openVideoPlayer(surahAyats, itemIndex);
+                }
+                addRecent(item);
+            });
+            actions.append(openBtn);
+            row.append(left, actions);
+            row.addEventListener("click", () => { if (item.SurahID) openOverlayForSurah(item.SurahID, item.AyatID); });
+            recentList.append(row);
+        }
+    }
+
+    function openOverlayForSurah(surahID, scrollToAyatID = null) {
+        const sMeta = bySurahID.get(surahID);
+        const list = ayatsBySurahID.get(surahID) || [];
+        infoTitle.textContent = `${pad2(sMeta?.surahNo ?? "")}. ${sMeta?.nameEn || ""} — ${toBnDigits(pad2(sMeta?.surahNo ?? ""))}. ${sMeta?.nameBn || ""}`;
+        const paras = sMeta ? Array.from(sMeta.paras).sort((a, b) => a - b).join(", ") : "—";
+        infoSub.textContent = `Revelation: ${sMeta?. revelation || "—"} • Para: ${paras} • Total Ayats: ${sMeta?.totalAyat ?? "—"}`;
+        buildAyatList(list);
+        openOverlay();
+        if (scrollToAyatID) {
+            setTimeout(() => {
+                const el = document.querySelector(`[data-ayat="${cssEscape(scrollToAyatID)}"]`);
+                if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+            }, 50);
+        }
+    }
+
+    function openOverlayForPara(para) {
+        const r = paraRanges.get(para);
+        infoTitle.textContent = `Para/Juz: ${para} — পারা: ${toBnDigits(para)}`;
+        if (r) { infoSub.textContent = `${r.start.surahName}:${r.start.surahNo}:${r.start.ayatNo} - ${r.end.surahName}:${r.end.surahNo}:${r.end.ayatNo}`; } else { infoSub.textContent = ""; }
+        const list = ayatsByPara.get(para) || [];
+        buildAyatList(list);
+        openOverlay();
+    }
+
+    function buildAyatList(list) {
+        ayatList.innerHTML = "";
+        list.forEach((row, idx) => {
+            const btn = document.createElement("div"); btn.className = "ayat-btn"; btn.dataset.ayat = row["AyatID"];
+            const left = document.createElement("div"); left.className = "ayat-left";
+            const n1 = document.createElement("div"); n1.className = "ayat-name"; n1.textContent = row["AyatName"] || `Ayat ${toNum(row["ayat no "]) || idx + 1}`;
+            const n2 = document.createElement("div"); n2.className = "ayat-bn"; n2.textContent = row["BAyatName"] || "";
+            left.append(n1, n2);
+            const right = document.createElement("div"); right.className = "actions";
+            const play = document.createElement("button"); play.className = "icon-btn"; play.textContent = "▶"; play.title = "Open Video";
+            play.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const item = ayatMinimal(row);
+                // The 'list' here might be from a para; we need the full surah list for the player.
+                const fullSurahList = ayatsBySurahID.get(row["SurahID"]) || list;
+                // ...
+const currentIdx = list.findIndex(i => i.AyatID === row.AyatID);
+if (currentIdx > -1) {
+    openVideoPlayer(list, currentIdx);
+}
+// ...
+                addRecent(item);
+            });
+            const star = document.createElement("div"); star.className = "star"; star.textContent = isBookmarked(row["AyatID"]) ? "⭐" : "☆"; if (isBookmarked(row["AyatID"])) star.classList.add("active"); star.title = "Bookmark";
+            star.addEventListener("click", (e) => {
+                e.stopPropagation();
+                toggleBookmark(row);
+                star.textContent = isBookmarked(row["AyatID"]) ? "⭐" : "☆";
+                star.classList.toggle("active", isBookmarked(row["AyatID"]));
+            });
+            right.append(play, star);
+            btn.append(left, right);
+            ayatList.append(btn);
+        });
+    }
+
+    function openOverlay() { overlay.classList.add("open"); history.pushState({ overlay: true }, "overlay"); }
+    function closeOverlay(goBack = true) {
+        if (goBack) {
+            history.back(); // ম্যানুয়ালি ক্লিক করলে শুধু হিস্ট্রি ব্যাক হবে
+        } else {
+            overlay.classList.remove('open'); // popstate থেকে কল হলে শুধু UI বন্ধ হবে
+        }
+    }
+    
+    function switchTab(tab) {
+        if (currentTab === tab) return;
+        currentTab = tab;
+        document.querySelectorAll(".tab").forEach(el => el.classList.toggle("active", el.dataset.tab === tab));
+        viewSurah.style.display = tab === "surah" ? "" : "none";
+        viewPara.style.display = tab === "para" ? "" : "none";
+        viewBookmarks.style.display = tab === "bookmarks" ? "" : "none";
+        viewRecent.style.display = tab === "recent" ? "" : "none";
+        selectedText.textContent = tab === "surah" ? "List of Surahs" : tab === "para" ? "Para / Juz List" : tab === "bookmarks" ? "Bookmarks" : "Recent Videos";
+    }
+
+    function openDrawer() { drawer.classList.add("open"); backdrop.classList.add("show"); }
+    function closeDrawer() { drawer.classList.remove("open"); backdrop.classList.remove("show"); }
+    function toggleTheme() { setTheme(currentTheme === "light" ? "dark" : "light"); }
+    function setTheme(theme) {
+        currentTheme = theme;
+        document.body.setAttribute("data-theme", theme);
+        localStorage.setItem("mh_theme", theme);
+        themeToggle.textContent = theme === "dark" ? "☀️" : "🌙";
+        document.getElementById("overlayThemeToggle").textContent = theme === "dark" ? "☀️" : "🌙";
+    }
+    
+    function ayatMinimal(row) { return { AyatID: row["AyatID"], SurahID: row["SurahID"], AyatName: row["AyatName"] || "", BAyatName: row["BAyatName"] || "", VideoLink: row["VideoLink"] || "", surahNo: toNum(row["surah no"]), surahName: row["SurahName"] || "" }; }
+    function isBookmarked(ayatID) { return bookmarks.some(b => b.AyatID === ayatID); }
+    function toggleBookmark(row) {
+        const id = row["AyatID"];
+        if (isBookmarked(id)) { bookmarks = bookmarks.filter(b => b.AyatID !== id); } else { bookmarks.unshift(ayatMinimal(row)); }
+        saveLS("mh_bookmarks", bookmarks);
+        renderBookmarks();
+    }
+    function removeBookmark(ayatID) {
+        bookmarks = bookmarks.filter(b => b.AyatID !== ayatID);
+        saveLS("mh_bookmarks", bookmarks);
+        renderBookmarks();
+        const star = document.querySelector(`[data-ayat="${cssEscape(ayatID)}"] .star`);
+        if (star) { star.textContent = "☆"; star.classList.remove("active"); }
+    }
+    
+    function addRecent(item) {
+        recent = recent.filter(x => x.AyatID !== item.AyatID);
+        recent.unshift(item);
+        if (recent.length > 15) recent.length = 15;
+        saveLS("mh_recent", recent);
+        renderRecent();
+    }
+    
+    function loadLS(key, fallback) { try { const v = JSON.parse(localStorage.getItem(key)); return Array.isArray(v) ? v : (v || fallback); } catch { return fallback; } }
+    function saveLS(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+    function toNum(v) { if (v === null || v === undefined || v === "") return NaN; const n = parseInt(String(v).replace(/^0+/, "")); return Number.isFinite(n) ? n : NaN; }
+    function pad2(n) { if (!Number.isFinite(n)) return ""; return String(n).padStart(2, "0"); }
+    function toBnDigits(n) { const s = String(n); const map = { "0": "০", "1": "১", "2": "২", "3": "৩", "4": "৪", "5": "৫", "6": "৬", "7": "৭", "8": "৮", "9": "৯" }; return s.replace(/[0-9]/g, d => map[d]); }
+    function cssEscape(s) { return String(s).replace(/"/g, '\\"'); }
+    
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            if (videoPlayerOverlay.classList.contains('open')) closeVideoPlayer(true);
+            else if (infoOverlay.classList.contains('open')) closeInfoOverlay(true); // নতুন লাইন
+            else if (overlay.classList.contains('open')) closeOverlay(true);
+            else if (drawer.classList.contains('open')) closeDrawer();
+        }
+    });
+
+    window.addEventListener("popstate", (e) => {
+        const state = e.state || {};
+        
+        if (state.videoPlayer) {
+            videoPlayerOverlay.classList.add('open');
+        } else {
+            closeVideoPlayer(false);
+        }
+
+        if (state.overlay) {
+            overlay.classList.add('open');
+        } else {
+            closeOverlay(false);
+        }
+
+        // নতুন ইনফো স্ক্রিনের জন্য স্টেট চেক
+        if (state.infoPage) {
+            infoOverlay.classList.add('open');
+        } else {
+            closeInfoOverlay(false);
+        }
+    });
+
+
+    // === VIDEO PLAYER LOGIC START ===
+    let currentPlaylist = [];
+    let currentPlaylistIndex = 0;
+    let ytPlayer = null, playerReady = false;
+    let selectedMode = false, selectedQueue = [], selectedPos = 0;
+    let isDrawerOpen = false;
+
+    const videoPlayerOverlay = document.getElementById('videoPlayerOverlay');
+    const playerContainer = document.getElementById('playerContainer');
+    const playerTitle = document.getElementById('playerTitle');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const playSelectedBtn = document.getElementById('playSelectedBtn');
+    const drawerToggle = document.getElementById('drawerToggle');
+    const sideDrawer = document.getElementById('sideDrawer');
+const ayatSelectionList = document.getElementById('ayatSelectionList');
+    const playerBackBtn = document.getElementById('playerBackBtn');
+    // নতুন কোড
+    const videoDrawerBackdrop = document.getElementById('videoDrawerBackdrop');
+    const closeSideDrawerBtn = document.getElementById('closeSideDrawerBtn');
+
+    function initPlayer() {
+      const tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      
+      // নতুন বাটনগুলোর রেফারেন্স
+    const videoPrevBtn = document.getElementById('videoPrevBtn');
+    const videoNextBtn = document.getElementById('videoNextBtn');
+
+    // Existing event listeners
+    drawerToggle.addEventListener('click', handleDrawerToggle);
+    playSelectedBtn.addEventListener('click', startSelectedLoop);
+   // নতুন কোড
+      videoDrawerBackdrop.addEventListener('click', closeSideDrawer);
+      closeSideDrawerBtn.addEventListener('click', closeSideDrawer);
+    
+    // পুরোনো prevBtn ও nextBtn এর জায়গায় নতুন বাটন যুক্ত করা হলো
+    videoPrevBtn.addEventListener('click', prevVideo);
+    videoNextBtn.addEventListener('click', nextVideo);
+    
+    playerBackBtn.addEventListener('click', () => closeVideoPlayer(true));
+    }
+
+    function getYoutubeId(url) {
+        if (!url) return null;
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    }
+
+    window.onYouTubeIframeAPIReady = () => { playerReady = true; };
+
+    function createPlayer(videoId) {
+        playerContainer.innerHTML = '<div id="ytplayer-instance"></div>';
+        ytPlayer = new YT.Player('ytplayer-instance', {
+            videoId,
+            playerVars: { autoplay: 1, controls: 1, playsinline: 1, rel: 0, modestbranding: 1 },
+            events: { onReady: e => e.target.playVideo(), onStateChange: onPlayerStateChange }
+        });
+    }
+
+    function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.ENDED) {
+        // এই অংশটি ড্রয়ারের সিলেক্ট করা আয়াতগুলো লুপ করার জন্য, যা ঠিক আছে।
+        if (selectedMode && selectedQueue.length > 0) {
+            selectedPos = (selectedPos + 1) % selectedQueue.length;
+            const nextIndexInPlaylist = selectedQueue[selectedPos];
+            playVideoByIndex(nextIndexInPlaylist);
+        } else {
+            // এই নতুন অংশটি একটি আয়াত বারবার রিপিট করার জন্য।
+            // এখানে nextVideo() এর পরিবর্তে seekTo(0) ব্যবহার করা হয়েছে।
+            event.target.seekTo(0); // ভিডিওর শুরুতে যাও
+        }
+    }
+}    
+    function playVideoByIndex(index) {
+        if (index < 0 || index >= currentPlaylist.length) return;
+        currentPlaylistIndex = index;
+        const ayat = currentPlaylist[index];
+        addRecent(ayatMinimal(ayat));
+        const videoId = getYoutubeId(ayat.VideoLink);
+        playerTitle.textContent = ayat.AyatName || "Madani Hifz";
+
+        if (!videoId) {
+            playerContainer.innerHTML = `<div class="empty">Video not available.</div>`;
+            if (ytPlayer && typeof ytPlayer.destroy === 'function') ytPlayer.destroy();
+            return;
+        }
+
+        if (window.YT && ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
+            ytPlayer.loadVideoById(videoId);
+        } else if (window.YT) {
+            createPlayer(videoId);
+        }
+    }
+
+    function populateDrawer() {
+        ayatSelectionList.innerHTML = '';
+        currentPlaylist.forEach((ayat, index) => {
+            const row = document.createElement('div');
+            row.className = 'check-row';
+            row.innerHTML = `<label><input type="checkbox" data-index="${index}" /> <span>${ayat.AyatName || `Ayat ${toNum(ayat["ayat no "])}`}</span></label>`;
+            ayatSelectionList.appendChild(row);
+        });
+    }
+
+    function startSelectedLoop() {
+        selectedQueue = [];
+        ayatSelectionList.querySelectorAll('input:checked').forEach(box => selectedQueue.push(parseInt(box.dataset.index)));
+        if (!selectedQueue.length) { return alert('কমপক্ষে একটি আয়াত সিলেক্ট করুন'); }
+        selectedMode = true;
+        selectedPos = 0;
+        playVideoByIndex(selectedQueue[0]);
+        closeSideDrawer();
+        updateDrawerToggleIcon();
+    }
+
+    function cancelSelectedLoop() {
+        selectedMode = false;
+        selectedQueue = [];
+        updateDrawerToggleIcon();
+    }
+
+    function prevVideo() {
+        cancelSelectedLoop();
+        const newIndex = (currentPlaylistIndex - 1 + currentPlaylist.length) % currentPlaylist.length;
+        playVideoByIndex(newIndex);
+    }
+    function nextVideo() {
+        cancelSelectedLoop();
+        const newIndex = (currentPlaylistIndex + 1) % currentPlaylist.length;
+        playVideoByIndex(newIndex);
+    }
+
+function openSideDrawer() {
+      sideDrawer.classList.add('open');
+      videoDrawerBackdrop.classList.add('show'); // নতুন লাইন
+      isDrawerOpen = true;
+    }
+    function closeSideDrawer() {
+      sideDrawer.classList.remove('open');
+      videoDrawerBackdrop.classList.remove('show'); // নতুন লাইন
+      isDrawerOpen = false;
+    }
+    function updateDrawerToggleIcon() { drawerToggle.textContent = selectedMode ? '×' : '☰'; }
+    function handleDrawerToggle() {
+        if (selectedMode) { cancelSelectedLoop(); playVideoByIndex(currentPlaylistIndex); } 
+        else { isDrawerOpen ? closeSideDrawer() : openSideDrawer(); }
+    }
+    function openVideoPlayer(playlist, startIndex) {
+        if (!playlist || playlist.length === 0) return;
+        currentPlaylist = playlist;
+        currentPlaylistIndex = startIndex;
+        selectedMode = false;
+        populateDrawer();
+        if (playerReady) {
+            playVideoByIndex(startIndex);
+        } else {
+            // Wait for API to be ready, then play
+            const checkReady = setInterval(() => {
+                if (playerReady) {
+                    clearInterval(checkReady);
+                    playVideoByIndex(startIndex);
+                }
+            }, 100);
+        }
+        videoPlayerOverlay.classList.add('open');
+        history.pushState({ videoPlayer: true }, "Video Player");
+        updateDrawerToggleIcon();
+    }
+
+    function closeVideoPlayer(goBack = true) {
+        if (goBack) {
+            history.back(); // ম্যানুয়ালি ক্লিক করলে শুধু হিস্ট্রি ব্যাক হবে
+        } else {
+            videoPlayerOverlay.classList.remove('open');
+            if (ytPlayer && typeof ytPlayer.stopVideo === 'function') {
+                ytPlayer.stopVideo();
+            }
+        }
+    }
+    // === VIDEO PLAYER LOGIC END ===
+        // === INFO OVERLAY LOGIC START ===
+    const infoOverlay = document.getElementById("infoOverlay");
+    const infoOverlayTitle = document.getElementById("infoOverlayTitle");
+    const infoContent = document.getElementById("infoContent");
+    
+    // আপনার দেওয়া গুগল অ্যাপস স্ক্রিপ্ট লিংক
+    const INFO_API_URL = "https://script.google.com/macros/s/AKfycbwEHm4t86wb0MuX4Qk2O1xLYTzUtjua6OzV2HWHrf0qspungby5eMM14pDf_gdh5sdFXw/exec";
+    
+    // ডেটা একবার লোড করে সেভ রাখার ভেরিয়েবল
+    let infoDataCache = null;
+
+    document.getElementById("infoOverlayBack").addEventListener("click", () => closeInfoOverlay(true));
+    document.getElementById("infoThemeToggle").addEventListener("click", toggleTheme);
+
+    // ড্রয়ারের বাটনগুলোতে ক্লিক ইভেন্ট যুক্ত করা
+    document.querySelectorAll('.drawer-item[data-info]').forEach((item, index) => {
+        item.addEventListener('click', async () => {
+            const infoType = item.dataset.info;
+            const titleText = item.querySelectorAll('span')[1].textContent;
+            const iconSpan = item.querySelectorAll('span')[0];
+            const originalIcon = iconSpan.innerHTML;
+            
+            const isExternalLink = index >= 3; // শেষের ৩টি বাটন লিংক/হোয়াটসঅ্যাপ
+
+            // যদি ওভারলে পেজ হয়, তাহলে আগেই ড্রয়ার বন্ধ করে লোডিং স্ক্রিন দেখাবো
+            if (!isExternalLink) {
+                closeDrawer();
+            }
+
+            // যদি ডেটা আগে থেকে লোড করা না থাকে, তাহলে ফেস করবো
+            if (!infoDataCache) {
+                if (!isExternalLink) {
+                    openInfoOverlay(titleText, "<div style='text-align:center; padding: 2rem; font-weight: bold; color: var(--muted);'>⏳ ডেটা লোড হচ্ছে...</div>");
+                } else {
+                    iconSpan.innerHTML = "⏳"; // লিংকের ক্ষেত্রে বাটনে লোডিং দেখাবো
+                    document.body.style.cursor = "wait";
+                }
+
+                try {
+                    const res = await fetch(INFO_API_URL);
+                    const data = await res.json();
+                    // ডেটা Array হিসেবে আসলে প্রথম রো (row) অবজেক্ট হিসেবে নিচ্ছি
+                    infoDataCache = Array.isArray(data) ? data[0] : data; 
+                } catch (e) {
+                    console.error("Info fetch error:", e);
+                    if (!isExternalLink) {
+                        document.getElementById("infoContent").innerHTML = "<div style='text-align:center; padding: 2rem; color: red;'>ডেটা লোড করতে সমস্যা হয়েছে। দয়া করে ইন্টারনেট কানেকশন চেক করুন।</div>";
+                    } else {
+                        alert("ডেটা লোড করতে সমস্যা হয়েছে। ইন্টারনেট চেক করুন।");
+                        iconSpan.innerHTML = originalIcon;
+                        document.body.style.cursor = "default";
+                    }
+                    return;
+                }
+
+                if (isExternalLink) {
+                    iconSpan.innerHTML = originalIcon;
+                    document.body.style.cursor = "default";
+                    closeDrawer(); // ফেস সফল হলে ড্রয়ার বন্ধ করবো
+                }
+            } else {
+                if (isExternalLink) closeDrawer();
+            }
+
+            // JSON এর key গুলো ডায়নামিক ভাবে বের করে সিরিয়ালি ভ্যালু নিচ্ছি
+            const keys = Object.keys(infoDataCache);
+            const val1 = infoDataCache[keys[0]]; // Header 1: How to use
+            const val2 = infoDataCache[keys[1]]; // Header 2: How to benefit
+            const val3 = infoDataCache[keys[2]]; // Header 3: About Us
+            const val4 = infoDataCache[keys[3]]; // Header 4: WhatsApp Number
+            const val5 = infoDataCache[keys[4]]; // Header 5: Facebook Link
+            const val6 = infoDataCache[keys[5]]; // Header 6: YouTube Link
+
+            // শর্ত অনুযায়ী অ্যাকশন
+            if (infoType === "how-to-use") {
+                openInfoOverlay(titleText, val1);
+            } else if (infoType === "how-to-benefit") {
+                openInfoOverlay(titleText, val2);
+            } else if (infoType === "about-us") {
+                openInfoOverlay(titleText, val3);
+            } else if (infoType === "contact-wa") {
+                // নম্বর থেকে স্পেস বা অন্য অক্ষর রিমুভ করে শুধু সংখ্যা (এবং +) নিয়ে হোয়াটসঅ্যাপ লিংক তৈরি
+                const phone = String(val4).replace(/[^\d+]/g, ''); 
+                window.open(`https://wa.me/${phone}`, '_blank');
+            } else if (infoType === "like-fb") {
+                window.open(val5, '_blank');
+            } else if (infoType === "sub-yt") {
+                window.open(val6, '_blank');
+            }
+        });
+    });
+
+    function openInfoOverlay(title, contentHTML) {
+        infoOverlayTitle.textContent = title;
+        // গুগল ডকের কোড করা HTML সরাসরি এখানে রেন্ডার হবে
+        infoContent.innerHTML = contentHTML; 
+        
+        // বারবার হিস্ট্রি অ্যাড হওয়া ঠেকাতে চেক করে নিচ্ছি
+        if (!infoOverlay.classList.contains("open")) {
+            infoOverlay.classList.add("open");
+            history.pushState({ infoPage: true }, "info");
+        }
+    }
+
+    function closeInfoOverlay(goBack = true) {
+        if (goBack) {
+            history.back();
+        } else {
+            infoOverlay.classList.remove('open');
+        }
+    }
+    // === INFO OVERLAY LOGIC END ===
+
+
+
+  </script>
+</body>
+</html>
